@@ -1,6 +1,9 @@
 const express = require("express");
+var cors = require("cors");
+const { join } = require("path");
 
 const hooksServer = express();
+hooksServer.use("/static", express.static(join(__dirname, "public")));
 let hooksServerPort = 3005;
 let responseCode = 200;
 let hooksPath = "/hooks";
@@ -17,6 +20,7 @@ process.on("message", function (message) {
 });
 
 hooksServer.use(express.json());
+hooksServer.use(cors());
 
 hooksServer.post(hooksPath, async (req, resp) => {
   const hookData = { recievedAt: Date(), headers: req.headers, body: req.body };
@@ -27,6 +31,10 @@ hooksServer.post(hooksPath, async (req, resp) => {
 
 hooksServer.get(hooksPath, (req, resp) => {
   resp.send(JSON.stringify(hooksRecieved));
+});
+
+hooksServer.get("/", (req, resp) => {
+  resp.sendFile(join(__dirname, "/public/index.html"));
 });
 
 hooksServer.listen(hooksServerPort, () => {

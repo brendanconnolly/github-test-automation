@@ -48,6 +48,7 @@ module.exports = class WebhooksListener {
         this.hooksServerProcess.on("message", (message) => {
           const conditionResult = conditionFunc(message);
           if (conditionResult) {
+            this.hooksServerProcess.removeListener("message", conditionFunc);
             resolve(message);
           }
         });
